@@ -55,15 +55,6 @@ class GTFSRealtimePublisher:
         for entity in feed_message.entity:
             if entity.HasField('trip_update'):
 
-                diff_feed_message = gtfs_realtime_pb2.FeedMessage()
-                diff_feed_message.header.gtfs_realtime_version = feed_message.header.gtfs_realtime_version
-                diff_feed_message.header.incrementality = diff_feed_message.header.DIFFERENTIAL
-                diff_feed_message.header.timestamp = int(time.time())
-
-                diff_entity = diff_feed_message.entity.add()
-
-                diff_entity.CopyFrom(entity)
-
                 # generate MQTT topic from placeholders
                 topic = self._config['mqtt']['trip_updates_topic']
 
@@ -83,9 +74,23 @@ class GTFSRealtimePublisher:
                 topic = topic.replace('#', '_')
                 topic = topic.replace('$', '_')
 
-                # publish message to MQTT
-                # self._mqtt.publish(topic, None, 1, True)
-                self._mqtt.publish(topic, diff_feed_message.SerializeToString(), 0, True)
+                # generate or delete message
+                if entity.HasField('is_deleted') and entity.is_deleted:
+                    # delete message from MQTT
+                    self._mqtt.publish(topic, None, 1, True)
+                else:
+                
+                    diff_feed_message = gtfs_realtime_pb2.FeedMessage()
+                    diff_feed_message.header.gtfs_realtime_version = feed_message.header.gtfs_realtime_version
+                    diff_feed_message.header.incrementality = diff_feed_message.header.DIFFERENTIAL
+                    diff_feed_message.header.timestamp = int(time.time())
+
+                    diff_entity = diff_feed_message.entity.add()
+
+                    diff_entity.CopyFrom(entity)
+
+                    # publish message to MQTT
+                    self._mqtt.publish(topic, diff_feed_message.SerializeToString(), 0, True)                
 
                 message_count = message_count + 1
 
