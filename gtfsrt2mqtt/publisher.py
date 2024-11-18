@@ -4,6 +4,7 @@ import time
 import yaml
 
 from google.transit import gtfs_realtime_pb2
+from google.protobuf.message import DecodeError
 from paho.mqtt import client
 
 from gtfsrt2mqtt.repeatedtimer import RepeatedTimer
@@ -46,8 +47,14 @@ class GTFSRealtimePublisher:
     def _fetch_service_alerts(self):
         feed_message = self._fetch_feed_message(self._config['gtfsrt']['service_alerts_url'])
 
+        if feed_message is None:
+            return
+
     def _fetch_trip_updates(self):
         feed_message = self._fetch_feed_message(self._config['gtfsrt']['trip_updates_url'])
+
+        if feed_message is None:
+            return
 
         message_count = 0
         start_time = int(time.time())
@@ -101,13 +108,20 @@ class GTFSRealtimePublisher:
     def _fetch_vehicle_positions(self):
         feed_message = self._fetch_feed_message(self._config['gtfsrt']['vehicle_positions_url'])
 
+        if feed_message is None:
+            return
+
     def _fetch_feed_message(self, url):
         response = requests.get(url)
 
-        feed_message = gtfs_realtime_pb2.FeedMessage()
-        feed_message.ParseFromString(response.content)
+        try:
+            feed_message = gtfs_realtime_pb2.FeedMessage()
+            feed_message.ParseFromString(response.content)
 
-        return feed_message
+            return feed_message
+        except google.protobuf.message.DecodeError:
+            logging.error('Received invalid protobuf message, waiting for next attempt ...')
+            return None
 
     def run(self):
         if not self._config['app']['service_alerts_update_frequency_seconds'] == 0:
