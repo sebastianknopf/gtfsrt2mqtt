@@ -119,7 +119,7 @@ class GTFSRealtimePublisher:
             feed_message.ParseFromString(response.content)
 
             return feed_message
-        except google.protobuf.message.DecodeError:
+        except DecodeError:
             logging.error('Received invalid protobuf message, waiting for next attempt ...')
             return None
 
