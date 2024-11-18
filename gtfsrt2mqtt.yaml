@@ -1,7 +1,7 @@
 app:
-  service_alerts_frequency_seconds: 60
-  trip_updates_frequency_seconds: 30
-  vehicle_positions_frequency_seconds: 15
+  service_alerts_update_frequency_seconds: 60
+  trip_updates_update_frequency_seconds: 30
+  vehicle_positions_update_frequency_seconds: 15
 gtfsrt:
   service_alerts_url: 'https://test.gtfs.org/realtime/service-alerts.pbf'
   trip_updates_url: 'https://test.gtfs.org/realtime/trip-updates.pbf'
@@ -9,6 +9,7 @@ gtfsrt:
 mqtt:
   host: 'test.mosquitto.org'
   port: 1883
+  client: gtfsrt2mqtt
   service_alerts_topic: 'demo/realtime/gtfsrt/servicealerts'
   trip_updates_topic: 'demo/realtime/gtfsrt/tripupdates/[routeId]/[tripId]'
   vehicle_positions_topic: 'demo/realtime/gtfsrt/vehiclepositions/[vehicleId]'

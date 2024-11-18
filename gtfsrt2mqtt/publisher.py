@@ -18,7 +18,7 @@ class GTFSRealtimePublisher:
                 self._config = yaml.safe_load(config_file)
 
         # connecto to MQTT broker as defined in config
-        self._mqtt = client.Client(client.CallbackAPIVersion.VERSION2, protocol=client.MQTTv5)
+        self._mqtt = client.Client(client.CallbackAPIVersion.VERSION2, protocol=client.MQTTv5, client_id=self._config['mqtt']['client'])
         self._mqtt.connect(self._config['mqtt']['host'], self._config['mqtt']['port'])
 
         self._mqtt.loop_start()
