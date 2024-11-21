@@ -10,6 +10,8 @@ mqtt:
   host: 'test.mosquitto.org'
   port: 1883
   client: gtfsrt2mqtt
+  username: null
+  password: null
   service_alerts_topic: 'demo/realtime/gtfsrt/servicealerts'
   trip_updates_topic: 'demo/realtime/gtfsrt/tripupdates/[routeId]/[tripId]'
   vehicle_positions_topic: 'demo/realtime/gtfsrt/vehiclepositions/[vehicleId]'

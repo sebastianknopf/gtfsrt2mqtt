@@ -20,6 +20,10 @@ class GTFSRealtimePublisher:
 
         # connecto to MQTT broker as defined in config
         self._mqtt = client.Client(client.CallbackAPIVersion.VERSION2, protocol=client.MQTTv5, client_id=self._config['mqtt']['client'])
+
+        if self._config['mqtt']['username'] is not None and self._config['mqtt']['password'] is not None:
+            self._mqtt.username_pw_set(username=self._config['mqtt']['username'], password=self._config['mqtt']['password'])
+
         self._mqtt.connect(self._config['mqtt']['host'], self._config['mqtt']['port'])
 
         self._mqtt.loop_start()
